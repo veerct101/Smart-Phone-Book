@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)file:///C:/Users/prince/Desktop/xyz.html -->
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>📘 Smart Phone Book</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 10px;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 850px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.4s ease;
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+      color: #2b2b2b;
+      font-weight: 600;
+    }
+
+    h3 {
+      margin-top: 30px;
+      border-top: 2px solid #eee;
+      padding-top: 15px;
+      color: #444;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .btn-group button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(45deg, #6c63ff, #8b7bff);
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn-group button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(45deg, #8b7bff, #6c63ff);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: 0.25s ease;
+    }
+
+    input:focus {
+      border-color: #6c63ff;
+      box-shadow: 0 0 8px rgba(108, 99, 255, 0.3);
+      outline: none;
+    }
+
+    #totalCount {
+      text-align: center;
+      font-weight: 600;
+      color: #6c63ff;
+      margin-bottom: 10px;
+    }
+
+    .group-header {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-top: 15px;
+      color: #6c63ff;
+      border-bottom: 2px solid #6c63ff33;
+      padding-bottom: 5px;
+    }
+
+    .entry,
+    .history-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9ff;
+      padding: 14px 18px;
+      margin: 6px 0;
+      border-radius: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: 0.3s ease;
+    }
+
+    .entry:hover,
+    .history-entry:hover {
+      transform: translateY(-2px);
+    }
+
+    .entry span b,
+    .history-entry span b {
+      color: #6c63ff;
+    }
+
+    .entry small,
+    .history-entry small {
+      background: #6c63ff;
+      color: #fff;
+      border-radius: 10px;
+      padding: 3px 6px;
+      font-size: 0.8em;
+      margin-left: 6px;
+    }
+
+    .fav-btn {
+      background: none;
+      font-size: 22px;
+      color: #ccc;
+      cursor: pointer;
+      transition: 0.3s ease;
+      position: relative;
+      border: none;
+    }
+
+    .fav-btn.fav {
+      color: #ffd700;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.3);
+    }
+
+    /* Tooltip */
+    .fav-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      font-size: 0.8em;
+      padding: 4px 8px;
+      border-radius: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .fav-btn:hover::after {
+      opacity: 1;
+    }
+
+    .no-result {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      margin-top: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      width: 90%;
+      max-width: 400px;
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6c63ff;
+      background: none;
+      border: none;
+    }
+
+    .close:hover {
+      color: #ffb400;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .entry {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .entry div {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>📘 Smart Phone Book</h2>
+
+    <div class="btn-group">
+      <button onclick="showAll()">All Contacts</button>
+      <button onclick="showFrequent()">Frequent</button>
+      <button onclick="showFavorites()">⭐ Favorites</button>
+      <button onclick="openModal()">➕ Add Contact</button>
+    </div>
+
+    <input id="searchInput" placeholder="🔍 Search by name or number..." onkeyup="liveSearch()">
+    <div id="totalCount">📇 Total: 0</div>
+    <div class="list" id="phoneList"></div>
+
+    <h3>📜 Call History</h3>
+    <div class="list" id="callHistoryList"></div>
+  </div>
+
+  <!-- Add Contact Modal -->
+  <div id="addModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <button class="close" onclick="closeModal()">×</button>
+      <h3>Add / Update Contact</h3>
+      <input id="nameInput" placeholder="Enter Name"><br>
+      <input id="phoneInput" placeholder="Enter Phone Number"><br><br>
+      <!-- hidden field to store original name during edit -->
+      <input type="hidden" id="originalName">
+      <button onclick="saveEntry()">💾 Save</button>
+    </div>
+  </div>
+
+  <script>
+   
+    function Node(name, phone) {
+      this.name = name;
+      this.phone = phone;
+      this.left = null;
+      this.right = null;
+    }
+
+    // ------------------ Globals & Persistence ------------------
+    let root = null;
+    let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+    let callHistory = JSON.parse(localStorage.getItem("callHistory") || "{}");
+    let callLog = JSON.parse(localStorage.getItem("callLog") || "[]");
+    let currentView = "all"; // all | frequent | favorite
+
+    // localStorage key for contacts: we store an array of objects as the canonical contact list
+    const CONTACTS_KEY = "contacts";
+
+    // ------------------ BST Helper Functions ------------------
+
+    function compareNames(a, b) {
+      // Case-insensitive alphabetical compare
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    }
+
+    // Insert or update: if name exists, update phone; otherwise insert
+    function insertNode(node, name, phone) {
+      if (!node) return new Node(name, phone);
+      let cmp = compareNames(name, node.name);
+      if (cmp < 0) node.left = insertNode(node.left, name, phone);
+      else if (cmp > 0) node.right = insertNode(node.right, name, phone);
+      else node.phone = phone; // update phone for same name
+      return node;
+    }
+
+    function insert(name, phone) {
+      root = insertNode(root, name, phone);
+    }
+
+    // In-order traversal -> returns array of nodes in sorted order
+    function inOrder(node, arr = []) {
+      if (!node) return arr;
+      inOrder(node.left, arr);
+      arr.push({ name: node.name, phone: node.phone });
+      inOrder(node.right, arr);
+      return arr;
+    }
+
+    // Find minimum node in subtree
+    function findMinNode(node) {
+      while (node.left) node = node.left;
+      return node;
+    }
+
+    // Delete node by name (case-insensitive)
+    function deleteNode(node, name) {
+      if (!node) return null;
+      let cmp = compareNames(name, node.name);
+      if (cmp < 0) {
+        node.left = deleteNode(node.left, name);
+      } else if (cmp > 0) {
+        node.right = deleteNode(node.right, name);
+      } else {
+        // Node found
+        if (!node.left && !node.right) return null;
+        if (!node.left) return node.right;
+        if (!node.right) return node.left;
+        // Two children: replace with inorder successor
+        let successor = findMinNode(node.right);
+        node.name = successor.name;
+        node.phone = successor.phone;
+        node.right = deleteNode(node.right, successor.name);
+      }
+      return node;
+    }
+
+    // Search exact name (case-insensitive)
+    function searchExact(node, name) {
+      if (!node) return null;
+      let cmp = compareNames(name, node.name);
+      if (cmp === 0) return node;
+      if (cmp < 0) return searchExact(node.left, name);
+      return searchExact(node.right, name);
+    }
+
+    // Fuzzy match search for live searching: checks subsequence match in name OR substring in phone
+    function fuzzyMatch(s, p) {
+      if (!p) return true;
+      p = p.toLowerCase();
+      s = s.toLowerCase();
+      // if phone search (contains digits), match substring
+      if (/\d/.test(p) && /\d/.test(s)) {
+        return s.includes(p);
+      }
+      // subsequence match for names
+      let i = 0;
+      for (let ch of s) {
+        if (ch === p[i]) i++;
+        if (i === p.length) break;
+      }
+      return i === p.length;
+    }
+
+    // Search whole tree and return matched list
+    function searchAll(node, query, results = []) {
+      if (!node) return results;
+      searchAll(node.left, query, results);
+      if (fuzzyMatch(node.name, query) || node.phone.includes(query)) {
+        results.push({ name: node.name, phone: node.phone });
+      }
+      searchAll(node.right, query, results);
+      return results;
+    }
+
+    // Sort array of entries by call frequency (desc)
+    function sortByCallFrequency(arr) {
+      return arr.sort((a, b) => (callHistory[b.phone] || 0) - (callHistory[a.phone] || 0));
+    }
+
+    // ------------------ Persistence (contacts list is canonical) ------------------
+
+    function saveAllToStorage() {
+      // Contacts: get sorted array from BST and store it
+      const contacts = inOrder(root);
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      localStorage.setItem("callHistory", JSON.stringify(callHistory));
+      localStorage.setItem("callLog", JSON.stringify(callLog));
+    }
+
+    function loadAllFromStorage() {
+      root = null;
+      const saved = JSON.parse(localStorage.getItem(CONTACTS_KEY) || "[]");
+      for (let c of saved) {
+        // Insert into BST (will keep order)
+        root = insertNode(root, c.name, c.phone);
+      }
+      favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      callHistory = JSON.parse(localStorage.getItem("callHistory") || "{}");
+      callLog = JSON.parse(localStorage.getItem("callLog") || "[]");
+    }
+
+    // ------------------ UI Rendering ------------------
+
+    function addContactHTML(list, e) {
+      const div = document.createElement("div");
+      div.className = "entry";
+      const calls = callHistory[e.phone] || 0;
+      const isFav = favorites.includes(e.phone);
+      const tooltip = isFav ? "Remove from favorite" : "Add to favorite";
+      const badge = calls > 0 ? `<small>📞 x${calls}</small>` : "";
+      div.innerHTML = `<span><b>${e.name}</b> : ${e.phone} ${badge}</span>
+        <div>
+          <button class="fav-btn ${isFav ? 'fav' : ''}" data-tooltip="${tooltip}"
+            onclick="toggleFavorite('${e.phone}')">⭐</button>
+          <button onclick="callNumber('${e.phone}','${e.name}')">📞</button>
+          <button onclick="openEditModal('${e.name}','${e.phone}')">✏️</button>
+          <button onclick="confirmDelete('${e.name}')">❌</button>
+        </div>`;
+      list.appendChild(div);
+    }
+
+    function renderCallHistory() {
+      const logDiv = document.getElementById("callHistoryList");
+      logDiv.innerHTML = "";
+      if (!callLog || callLog.length === 0) {
+        logDiv.innerHTML = "<p class='no-result'>No calls made yet...</p>";
+        return;
+      }
+      for (let log of callLog.slice().reverse()) {
+        const div = document.createElement("div");
+        div.className = "history-entry";
+        div.innerHTML = `<span><b>${log.name}</b> : ${log.phone}</span><small>${log.timestamp}</small>`;
+        logDiv.appendChild(div);
+      }
+    }
+
+    function renderList(f = "") {
+      const list = document.getElementById("phoneList");
+      list.innerHTML = "";
+
+      // Get the base set: either all or matched by search
+      let res = (f === "") ? inOrder(root) : searchAll(root, f);
+
+      if (currentView === "frequent") {
+        res = sortByCallFrequency(res).filter(e => (callHistory[e.phone] || 0) > 0);
+        document.getElementById("totalCount").innerText = `📞 Frequent Calls: ${res.length}`;
+        if (res.length === 0) list.innerHTML = "<p class='no-result'>No frequent callers yet.</p>";
+        else for (let e of res) addContactHTML(list, e);
+        renderCallHistory();
+        return;
+      }
+
+      if (currentView === "favorite") {
+        res = res.filter(e => favorites.includes(e.phone));
+        document.getElementById("totalCount").innerText = `⭐ Favorites: ${res.length}`;
+        if (res.length === 0) list.innerHTML = "<p class='no-result'>No favorites yet.</p>";
+        else {
+          // Keep alphabetical grouping for favorites too
+          let grouped = {};
+          for (let e of res) {
+            let first = e.name[0] ? e.name[0].toUpperCase() : '#';
+            if (!grouped[first]) grouped[first] = [];
+            grouped[first].push(e);
+          }
+          for (let letter of Object.keys(grouped).sort()) {
+            const header = document.createElement("div");
+            header.className = "group-header";
+            header.textContent = letter;
+            list.appendChild(header);
+            for (let e of grouped[letter]) addContactHTML(list, e);
+          }
+        }
+        renderCallHistory();
+        return;
+      }
+
+      // Default (all contacts)
+      document.getElementById("totalCount").innerText = `📇 Total: ${res.length}`;
+      if (res.length === 0) {
+        list.innerHTML = "<p class='no-result'>No results found...</p>";
+        renderCallHistory();
+        return;
+      }
+
+      // Group A–Z
+      let grouped = {};
+      for (let e of res) {
+        let first = e.name[0] ? e.name[0].toUpperCase() : '#';
+        if (!grouped[first]) grouped[first] = [];
+        grouped[first].push(e);
+      }
+      for (let letter of Object.keys(grouped).sort()) {
+        const header = document.createElement("div");
+        header.className = "group-header";
+        header.textContent = letter;
+        list.appendChild(header);
+        for (let e of grouped[letter]) addContactHTML(list, e);
+      }
+
+      renderCallHistory();
+    }
+
+    // ------------------ Actions: call, favorite, delete, edit ------------------
+
+    function callNumber(phone, name) {
+      callHistory[phone] = (callHistory[phone] || 0) + 1;
+      callLog.push({ name, phone, timestamp: new Date().toLocaleString() });
+      saveAllToStorage();
+      renderList(document.getElementById("searchInput").value);
+    }
+
+    function toggleFavorite(phone) {
+      const idx = favorites.indexOf(phone);
+      if (idx > -1) favorites.splice(idx, 1);
+      else favorites.push(phone);
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      renderList(document.getElementById("searchInput").value);
+    }
+
+    function confirmDelete(name) {
+      if (confirm("Delete " + name + "?")) {
+        root = deleteNode(root, name);
+        // Also remove from persisted array (we will re-save from BST)
+        saveAllToStorage();
+        renderList(document.getElementById("searchInput").value);
+      }
+    }
+
+    // ------------------ Modal add/edit handling ------------------
+
+    function openModal() {
+      document.getElementById("addModal").style.display = "block";
+      document.getElementById("nameInput").value = "";
+      document.getElementById("phoneInput").value = "";
+      document.getElementById("originalName").value = "";
+    }
+
+    function closeModal() {
+      document.getElementById("addModal").style.display = "none";
+    }
+
+    function openEditModal(name, phone) {
+      document.getElementById("addModal").style.display = "block";
+      document.getElementById("nameInput").value = name;
+      document.getElementById("phoneInput").value = phone;
+      document.getElementById("originalName").value = name; // keep track of original
+    }
+
+    
+function validateName(name) {
+  return /^[A-Za-z ]{2,30}$/.test(name);
+}
+
+function validatePhone(phone) {
+  return /^\d{10}$/.test(phone);
+}
+
+function duplicatePhone(phone, originalName = "") {
+  const contacts = inOrder(root);
+  return contacts.some(
+    c => c.phone === phone && compareNames(c.name, originalName) !== 0
+  );
+}
+
+// Unified save - handles both Add and Edit (originalName empty => add)
+    
+function saveEntry() {
+  const nameEl = document.getElementById("nameInput");
+  const phoneEl = document.getElementById("phoneInput");
+  const original = document.getElementById("originalName").value.trim();
+
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+
+  if (!validateName(name)) {
+    return alert("Name must contain only letters and spaces (2-30 characters).");
+  }
+
+  if (!validatePhone(phone)) {
+    return alert("Phone number must contain exactly 10 digits.");
+  }
+
+  if (duplicatePhone(phone, original || name)) {
+    return alert("Phone number already exists.");
+  }
+
+  if (original && compareNames(original, name) !== 0) {
+    root = deleteNode(root, original);
+  }
+
+  root = insertNode(root, name, phone);
+  saveAllToStorage();
+  closeModal();
+  renderList(document.getElementById("searchInput").value);
+}
+
+
+    // Close modal clicking outside
+    window.onclick = function (e) {
+      if (e.target === document.getElementById("addModal")) closeModal();
+    };
+
+    // ------------------ Search & Views ------------------
+
+    function liveSearch() {
+      const q = document.getElementById("searchInput").value.trim();
+      renderList(q);
+    }
+
+    function showAll() {
+      currentView = "all";
+      renderList(document.getElementById("searchInput").value);
+    }
+
+    function showFrequent() {
+      currentView = "frequent";
+      renderList(document.getElementById("searchInput").value);
+    }
+
+    function showFavorites() {
+      currentView = "favorite";
+      renderList(document.getElementById("searchInput").value);
+    }
+
+    // ------------------ Initialization ------------------
+
+    // Load contacts & other data from storage and render
+    loadAllFromStorage();
+    renderList();
+
+    // expose some functions globally for inline onclick attributes
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.toggleFavorite = toggleFavorite;
+    window.callNumber = callNumber;
+    window.openEditModal = openEditModal;
+    window.confirmDelete = confirmDelete;
+    window.saveEntry = saveEntry;
+    window.liveSearch = liveSearch;
+    window.showAll = showAll;
+    window.showFrequent = showFrequent;
+    window.showFavorites = showFavorites;
+  </script>
+</body>
+
+</html>
